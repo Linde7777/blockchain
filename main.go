@@ -85,7 +85,7 @@ func (cli *CommandLine) run() {
 }
 
 func main() {
-	chain := blockchain.InitBlockChain()
+	chain := blockchain.NewBlockChain()
 	cli := CommandLine{chain: chain}
 	cli.run()
 }

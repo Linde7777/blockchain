@@ -18,7 +18,7 @@ type BlockChain struct {
 
 var DBKeyLastBlockHash = []byte("last-block-hash")
 
-func InitBlockChain() *BlockChain {
+func NewBlockChain() *BlockChain {
 	var lastBlockHash []byte
 	opts := badger.DefaultOptions(dbPath)
 	db, err := badger.Open(opts)
