@@ -13,7 +13,7 @@ type Block struct {
 	Nonce    int
 }
 
-func CreateBlock(data string, prevHash []byte) *Block {
+func NewBlock(data string, prevHash []byte) *Block {
 	block := &Block{
 		Hash:     nil,
 		Data:     []byte(data),
@@ -29,7 +29,7 @@ func CreateBlock(data string, prevHash []byte) *Block {
 }
 
 func CreateGenesisBlock() *Block {
-	return CreateBlock("Genesis Block", []byte{})
+	return NewBlock("Genesis Block", []byte{})
 }
 
 func (b *Block) Serialize() []byte {
@@ -43,12 +43,11 @@ func (b *Block) Serialize() []byte {
 	return res.Bytes()
 }
 
-func (b *Block) Deserialize(data []byte) *Block {
+func (b *Block) Deserialize(data []byte) {
 	var block Block
 	decoder := gob.NewDecoder(bytes.NewReader(data))
 	err := decoder.Decode(&block)
 	if err != nil {
 		log.Panic(err)
 	}
-	return &block
 }
