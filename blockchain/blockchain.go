@@ -74,7 +74,7 @@ func (chain *BlockChain) AddBlock(data string) {
 	})
 	utils.HandlePanic(err)
 
-	newBlock := CreateBlock(data, lastBlockHash)
+	newBlock := NewBlock(data, lastBlockHash)
 	err = chain.DB.Update(func(txn *badger.Txn) error {
 		err := txn.Set(newBlock.Hash, newBlock.Serialize())
 		if err != nil {
@@ -92,4 +92,32 @@ func (chain *BlockChain) AddBlock(data string) {
 		return err
 	})
 	utils.HandlePanic(err)
+}
+
+type Iterator struct {
+	CurrentHash []byte
+	DB          *badger.DB
+}
+
+func (chain *BlockChain) NewIterator() *Iterator {
+	return &Iterator{
+		CurrentHash: chain.LastBlockHash,
+		DB:          chain.DB,
+	}
+}
+
+func (iter *Iterator) Next() *Block {
+	var block *Block
+	err := iter.DB.View(func(txn *badger.Txn) error {
+		item, err := txn.Get(iter.CurrentHash)
+		if err != nil {
+			return err
+		}
+		blockHash, err := item.ValueCopy(nil)
+		block.Deserialize(blockHash)
+		return err
+	})
+	utils.HandlePanic(err)
+
+	return block
 }
